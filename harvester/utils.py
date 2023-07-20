@@ -65,7 +65,7 @@ def transform_dataframe(gdf):
     gdf = pd.concat([gdf.drop(["tags"], axis=1), gdf["tags"].apply(pd.Series)], axis=1)
 
     # ceep only required tags
-    cleaned_gdf = gdf.filter(["id", "addr:full", "image", "pump:style", "check_date","pump:status", "geometry"])
+    cleaned_gdf = gdf.filter(["id", "name", "drinking_water", "addr:full", "geometry"])
     # list of dropped columns
         #     "lat",
         #     "lon",
@@ -111,37 +111,14 @@ def transform_dataframe(gdf):
         # ]
 
     # TODO: [GDK-16] Notify when this happens. Since this would mean that the output from osm did change
-    if "check_date" not in cleaned_gdf:
-        cleaned_gdf["check_date"] = pd.Series(dtype=str)
     if "addr:full" not in cleaned_gdf:
         cleaned_gdf["addr:full"] = pd.Series(dtype=str)
-    if "pump:style" not in cleaned_gdf:
-        cleaned_gdf["pump:style"] = pd.Series(dtype=str)
+
     # rename tag content
-    cleaned_gdf["pump:status"] = cleaned_gdf["pump:status"].fillna("unbekannt")
-    cleaned_gdf["pump:status"] = cleaned_gdf["pump:status"].replace("broken", "defekt")
+    cleaned_gdf["drinking_water"] = cleaned_gdf["drinking_water"].fillna("unbekannt")
+    cleaned_gdf["drinking_water"] = cleaned_gdf["drinking_water"].replace("yes", "no")
 
-    cleaned_gdf["pump:status"] = cleaned_gdf["pump:status"].replace(
-        "missing_beam", "defekt"
-    )
-    cleaned_gdf["pump:status"] = cleaned_gdf["pump:status"].replace(
-        "out_of_order", "defekt"
-    )
-
-    cleaned_gdf["pump:status"] = cleaned_gdf["pump:status"].replace(
-        "ok", "funktionsfähig"
-    )
-
-    cleaned_gdf["pump:status"] = cleaned_gdf["pump:status"].replace(
-        "locked", "verriegelt"
-    )
-    cleaned_gdf["pump:status"] = cleaned_gdf["pump:status"].replace(
-        "blocked", "verriegelt"
-    )
-
-    cleaned_gdf["check_date"] = cleaned_gdf["check_date"].fillna("unbekannt")
     cleaned_gdf["addr:full"] = cleaned_gdf["addr:full"].fillna("unbekannt")
-    cleaned_gdf["pump:style"] = cleaned_gdf["pump:style"].fillna("unbekannt")
     # set crs
     cleaned_gdf.crs = "EPSG:4326"
     return cleaned_gdf
