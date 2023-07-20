@@ -1,11 +1,11 @@
 ![](https://img.shields.io/badge/Built%20with%20%E2%9D%A4%EF%B8%8F-at%20Technologiestiftung%20Berlin-blue)
 
-# Giess den Kiez Pumpen aggregation from OSM
+# Musterstadt Gießt – Fountain aggregation from OSM
 
 This is a Docker based GitHub Action to aggregate pumps data from OpenStreetMap and to store them in a geojson file. It is defined in [./action.yml](./action.yml)
 
-The aggregated data is used to provide locations and information about the street pumps in the frontend of [Gieß den Kiez](https://github.com/technologiestiftung/giessdenkiez-de).
-The [Overpass API](http://overpass-api.de) for OSM is used to retrieve the data, by fetching all nodes with tag `"man_made"="water_well"` and `"description"="Berliner Straßenbrunnen"`.
+The aggregated data is used to provide locations and information about the public fontains in the frontend of [Musterstadt Gießt](https://github.com/greenbluelab/musterstadt-giesst) and uses Dresden as an example city.
+The [Overpass API](http://overpass-api.de) for OSM is used to retrieve the data, by fetching all nodes with tag `"amenity=fountain"` in the search area of `"name=Dresden"`.
 
 The corresponding query is defined in the script [fetch.py](/fetch.py). It can be overriden by providing a custom overpass query statement.
 
@@ -31,9 +31,9 @@ The path to where the file was written.
 The Github Action defined in this repository is built to be reusable. What you do with the generated `pumps.geojson` file is up to you and depends on your specific use case.
 
 ### Usage for giessdenkiez-de repository
-For [giessdenkiez-de](https://github.com/technologiestiftung/giessdenkiez-de), the custom Github Action defined here in [./action.yml](./action.yml) gets used in a periodically triggered Github Action, 
-which is defined in [giessdenkiez-de -> pumps.yml](https://github.com/technologiestiftung/giessdenkiez-de/blob/master/.github/workflows/pumps.yml).
-For this specific use case, the generated `pumps.geojson` file is subsequently uploaded to a [Supabase](https://supabase.com/) storage location. For details, refer to the Github Actions definition in [giessdenkiez-de -> pumps.yml](https://github.com/technologiestiftung/giessdenkiez-de/blob/master/.github/workflows/pumps.yml). 
+For [musterstadt-giesst](https://github.com/greenbluelab/musterstadt-giesst), the custom Github Action defined here in [./action.yml](./action.yml) gets used in a periodically triggered Github Action, 
+which is defined in [musterstadt-giesst -> pumps.yml](https://github.com/greenbluelab/musterstadt-giesst/blob/master/.github/workflows/pumps.yml).
+For this specific use case, the generated `pumps.geojson` file is subsequently uploaded to a [Supabase](https://supabase.com/) storage location. For details, refer to the Github Actions definition in [musterstadt-giesst -> pumps.yml](https://github.com/greenbluelab/musterstadt-giesst/blob/master/.github/workflows/pumps.yml). 
 
 ### Your own public repository
 Reference the Github Action defined in this repository in your own Github Actions file. Use the generated `pumps.geojson` in a way that fits your architecture.
@@ -57,7 +57,7 @@ jobs:
         # e.g
         # uses: technologiestiftung/giessdenkiez-de-osm-pumpen-harvester@1.2.0
         # use master if you like to gamble
-        uses: technologiestiftung/giessdenkiez-de-osm-pumpen-harvester@master
+        uses: greenbluelab/musterstadt-giesst-pumpen-harvester@master
         id: pumps
         with:
           outfile-path: "out/pumps.geojson"
@@ -115,8 +115,8 @@ Build the container and run it.
 
 ```bash
 mkdir out
-docker build --tag technologiestiftung/giessdenkiez-de-osm-pumpen-harvester .
-docker run -v $PWD/out:/scripts/out technologiestiftung/giessdenkiez-de-osm-pumpen-harvester path/scripts/out/outfile.json
+docker build --tag greenbluelab/musterstadt-giesst-pumpen-harvester .
+docker run -v $PWD/out:/scripts/out greenbluelab/musterstadt-giesst-pumpen-harvester path/scripts/out/outfile.json
 ```
 
 ### Test
@@ -125,6 +125,19 @@ docker run -v $PWD/out:/scripts/out technologiestiftung/giessdenkiez-de-osm-pump
 pytest
 pytest --cov=harvester --cov-fail-under 75 --cov-config=.coveragerc
 ```
+
+## Inspect Data with Overpass in the Browser
+In order to see if there is some crowd-sourced data in OSM, you can checkout the Overpass API: https://overpass-turbo.eu/#
+
+The following command should return round about 95 fountains for Dresden
+
+```
+area[name=Dresden]->.searchArea;
+node[amenity=fountain](area.searchArea);
+out;
+```
+
+Read more about the Overpass data mining tool here: https://wiki.openstreetmap.org/wiki/Overpass_turbo
 
 ## Contributors ✨
 
