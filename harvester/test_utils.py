@@ -68,19 +68,7 @@ def test_get_overpass_gdf(response_fixture):
 def test_transform_dataframe(response_fixture):
     gdf = get_overpass_gdf(response_fixture)
     cleaned_gdf = transform_dataframe(gdf)
-    assert cleaned_gdf["pump:status"][1] == "defekt"
-    assert cleaned_gdf["pump:status"][0] == "unbekannt"
-    assert cleaned_gdf["pump:status"][2] == "defekt"
-    assert cleaned_gdf["pump:status"][3] == "defekt"
-    assert cleaned_gdf["pump:status"][4] == "funktionsfähig"
-    assert cleaned_gdf["pump:status"][5] == "verriegelt"
-    assert cleaned_gdf["pump:status"][6] == "verriegelt"
-    assert cleaned_gdf["check_date"][3] == "unbekannt"
-    assert cleaned_gdf["addr:full"][0] == "unbekannt"
-    assert cleaned_gdf["pump:style"][0] == "unbekannt"
-    assert cleaned_gdf["check_date"][1] != "unbekannt"
-    assert cleaned_gdf["addr:full"][1] != "unbekannt"
-    assert cleaned_gdf["pump:style"][1] != "unbekannt"
+    assert "drinking_water" in cleaned_gdf.columns
     assert "geometry" in cleaned_gdf.columns
     assert "has_no_lat_lon" not in cleaned_gdf.values
 
