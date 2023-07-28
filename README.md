@@ -107,7 +107,7 @@ See also https://docs.github.com/en/actions/creating-actions/creating-a-docker-c
 
 ### Python
 
-Run the script with `python3 harvester/main.py path/to/out/file.geojson`
+Run the script with `python3 harvester/main.py out/pumps.geojson`
 
 ### Docker
 
